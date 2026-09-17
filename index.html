@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة طلاب علوم البيانات | كلية العلوم الإدارية - جامعة تعز</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- شريط التنقل -->
+  <header class="apple-nav">
+    <div class="nav-content">
+      <div class="nav-brand">
+        <span class="nav-title">منصة علوم البيانات</span>
+        <span class="nav-subtitle">جامعة تعز • كلية العلوم الإدارية</span>
+      </div>
+      <nav class="nav-menu">
+        <a href="#home">الرئيسية</a>
+        <a href="javascript:void(0)" class="nav-ai-badge" id="navAiBtn">🤖 المساعد الذكي</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- البوابة الرئيسية مع ميزة البحث السريع -->
+  <main class="hero-container" id="home">
+    <p class="eyebrow-tag">جامعة تعز • كلية العلوم الإدارية</p>
+    <h1 class="main-headline">منصة طلاب علوم البيانات</h1>
+    <p class="main-subheadline">
+      بوابتك الأكاديمية الشاملة للوصول المباشر إلى المحاضرات، الكورسات، ونماذج الاختبارات في تجربة واحدة منظمة.
+    </p>
+
+    <!-- شريط البحث السريع -->
+    <div class="search-wrapper">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="courseSearchInput" placeholder="ابحث عن مقرر (مثال: تنبؤ، خوارزميات، إحصاء...)" autocomplete="off">
+        <button id="clearSearchBtn" class="clear-search-btn" title="مسح">&#10005;</button>
+      </div>
+      <!-- قائمة نتائج البحث المنبثقة -->
+      <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+    </div>
+
+    <div>
+      <span class="initiative-pill">مبادرة طلابية مستقلة — كلية العلوم الإدارية</span>
+    </div>
+
+    <div class="cta-group">
+      <button class="btn-apple-primary" id="openLevelsModalBtn">تصفح بالخطة الدراسية كاملة</button>
+    </div>
+  </main>
+
+  <!-- النافذة التفاعلية الموحدة (للمقررات والمساعد الذكي) -->
+  <div class="apple-modal-overlay" id="interactiveModal">
+    <div class="apple-modal-window">
+      <button class="btn-close-circle" id="modalCloseBtn" title="إغلاق">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- التذييل -->
+  <footer class="apple-footer">
+    <p>منصة طلاب علوم البيانات — <strong>جامعة تعز • كلية العلوم الإدارية</strong></p>
+    <p class="footer-dev">مبادرة طلابية مستقلة | تصميم وتطوير: <strong>محمد هاني محمد</strong></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
