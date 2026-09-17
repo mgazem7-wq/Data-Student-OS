@@ -620,23 +620,19 @@ function renderAiAssistant() {
 
   modalBody.innerHTML = `
     <div>
-      <p class="sheet-step-badge">🤖 رفيق الطالب الذكي</p>
-      <h2 class="sheet-title">المساعد الأكاديمي</h2>
-      <p class="sheet-desc">كلية العلوم الإدارية • جامعة تعز</p>
+      <p class="sheet-step-badge">🤖 المساعد الأكاديمي (نسخة تجريبية )</p>
+      <h2 class="sheet-title">المساعد الذكي</h2>
+
+      <!-- شريط التنبيه وإخلاء المسؤولية -->
+      <div style="background: #fff3cd; color: #856404; padding: 10px 14px; border-radius: 12px; font-size: 13px; margin: 12px 0 16px; border: 1px solid #ffeeba; line-height: 1.5;">
+        ⚠️ <strong>تنبيه للطلاب:</strong> المساعد الذكي لا يزال <strong>قيد التطوير والتجربة</strong>، وقد يقدم إجابات غير دقيقة أحياناً. يُرجى دائماً مراجعة المحاضرات والمراجع الرسمية للتأكد من المعلومات.
+      </div>
 
       <div class="ai-chat-container">
-        <!-- شريط الأسئلة السريعة -->
-        <div class="ai-chips-wrapper">
-          <button class="ai-chip" onclick="askAi('ما هي مواد المستوى الثالث؟')">💡 مواد المستوى الثالث</button>
-          <button class="ai-chip" onclick="askAi('اشرح لي مقرر أساليب التنبؤ')">📊 أساليب التنبؤ</button>
-          <button class="ai-chip" onclick="askAi('ما هي متطلبات دراسة البرمجة في التخصص؟')">🐍 البرمجة وبايثون</button>
-          <button class="ai-chip" onclick="askAi('ما هي مواد المستوى الأول؟')">🎯 نصيحة للمستوى الأول</button>
-        </div>
-
         <!-- قائمة الرسائل -->
         <div class="ai-messages-list" id="aiMessagesList">
           <div class="ai-msg ai-msg-bot">
-            مرحباً بك! أنا رفيقك الأكاديمي الذكي لقسم علوم البيانات. يمكنك سؤالي عن أي مقرر، خطة المواد، أو استفساراتك الدراسية وسأجيبك فوراً.
+           يمكنك الاستفسار علماً بأن إجاباتي قيد التحسين المستمر.
           </div>
         </div>
 
