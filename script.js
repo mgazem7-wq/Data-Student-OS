@@ -122,6 +122,7 @@ const academicData = {
 // ==========================================
 // 2. مكتبة محتوى المقررات (مسار الملف مضبوط ومؤكد)
 // ==========================================
+```js
 const CONTENT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-zeg8kbkA5foA9oFdF462BUjzaIg6WDa7Q6eGyvYx1LF4BpSRdSfguScXOFIm3mvr-_KclFnEuIIG/pub?gid=0&single=true&output=csv";
 
 async function loadContentFromSheet() {
@@ -138,6 +139,7 @@ async function loadContentFromSheet() {
   }
 }
 
+
 async function loadCourseContentFromSheet() {
   console.log("بدأ تحميل محتوى المقررات من Google Sheets");
 
@@ -146,16 +148,6 @@ async function loadCourseContentFromSheet() {
     const csvText = await response.text();
 
     console.log("بيانات Google Sheets للمحتوى:", csvText);
-
-    // سنضع بقية الكود هنا لاحقًا
-  } catch (error) {
-    console.error("خطأ في تحميل محتوى المقررات:", error);
-  }
-}
- async function loadCourseContentFromSheet() {
-  try {
-    const response = await fetch(CONTENT_SHEET_URL);
-    const csvText = await response.text();
 
     const rows = csvText.trim().split("\n");
     const headers = rows[0].split(",");
@@ -205,22 +197,29 @@ async function loadCourseContentFromSheet() {
       courseLibrary[course] = newLibrary[course];
     });
 
-    console.log("تم تحميل محتوى المقررات من Google Sheets:", newLibrary);
+    console.log(
+      "تم تحميل محتوى المقررات من Google Sheets:",
+      newLibrary
+    );
 
   } catch (error) {
-    console.error("خطأ في تحميل محتوى المقررات:", error);
+    console.error(
+      "خطأ في تحميل محتوى المقررات من Google Sheets:",
+      error
+    );
   }
 }
+
 
 const courseLibrary = {
   "أساليب التنبؤ": {
     lectures: [
       {
-  title: "المحاضرة 1",
-  icon: "📄",
-  desc: "ملف PDF",
-  url: "https://drive.google.com/uc?export=download&id=1q5sCXr5RPHVj5CJ6Gw6CLEluqtPzHLYl"
-},
+        title: "المحاضرة 1",
+        icon: "📄",
+        desc: "ملف PDF",
+        url: "https://drive.google.com/uc?export=download&id=1q5sCXr5RPHVj5CJ6Gw6CLEluqtPzHLYl"
+      },
       {
         title: "المحاضرة 2",
         icon: "📄",
@@ -240,6 +239,7 @@ const courseLibrary = {
         status: "pending"
       }
     ],
+
     extraCourses: [
       {
         title: "كورس أساسيات التنبؤ والسلاسل الزمنية",
@@ -248,6 +248,7 @@ const courseLibrary = {
         url: "https://youtu.be/qma5w3lstR4?si=vJmRkZj8mkjbgzR3"
       }
     ],
+
     exams: [
       {
         title: "نموذج اختبار سابق 1",
@@ -258,8 +259,11 @@ const courseLibrary = {
     ]
   }
 };
-loadCourseContentFromSheet();
 
+
+// تشغيل تحميل المحتوى من Google Sheets
+loadCourseContentFromSheet();
+```
 // ==========================================
 // 3. إدارة التنقل وحالة النافذة
 // ==========================================
