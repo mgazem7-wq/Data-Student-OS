@@ -136,7 +136,66 @@ async function loadContentFromSheet() {
     return null;
   }
 }
-loadContentFromSheet();
+ async function loadCourseContentFromSheet() {
+  try {
+    const response = await fetch(CONTENT_SHEET_URL);
+    const csvText = await response.text();
+
+    const rows = csvText.trim().split("\n");
+    const headers = rows[0].split(",");
+
+    const newLibrary = {};
+
+    rows.slice(1).forEach(row => {
+      const columns = row.split(",");
+
+      const course = columns[0]?.trim();
+      const section = columns[1]?.trim();
+      const title = columns[2]?.trim();
+      const type = columns[3]?.trim();
+      const url = columns[4]?.trim();
+
+      if (!course || !section || !title || !url) return;
+
+      if (!newLibrary[course]) {
+        newLibrary[course] = {
+          lectures: [],
+          extraCourses: [],
+          exams: []
+        };
+      }
+
+      let categoryKey = "";
+
+      if (section === "المحاضرات") {
+        categoryKey = "lectures";
+      } else if (section === "الكورسات") {
+        categoryKey = "extraCourses";
+      } else if (section === "النماذج") {
+        categoryKey = "exams";
+      }
+
+      if (!categoryKey) return;
+
+      newLibrary[course][categoryKey].push({
+        title: title,
+        icon: type === "YouTube" ? "🎥" : "📄",
+        desc: type === "YouTube" ? "رابط يوتيوب" : "ملف PDF",
+        url: url
+      });
+    });
+
+    Object.keys(newLibrary).forEach(course => {
+      courseLibrary[course] = newLibrary[course];
+    });
+
+    console.log("تم تحميل محتوى المقررات من Google Sheets:", newLibrary);
+
+  } catch (error) {
+    console.error("خطأ في تحميل محتوى المقررات:", error);
+  }
+}
+
 const courseLibrary = {
   "أساليب التنبؤ": {
     lectures: [
@@ -183,6 +242,7 @@ const courseLibrary = {
     ]
   }
 };
+loadCourseContentFromSheet();
 
 // ==========================================
 // 3. إدارة التنقل وحالة النافذة
