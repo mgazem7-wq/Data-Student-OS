@@ -1,7 +1,7 @@
 // ==========================================
 // 0. إعدادات محرك الذكاء الاصطناعي (Google Gemini)
 // ==========================================
-const GEMINI_API_KEY = "AQ.Ab8RN6IrPqsMBEdvXZi0RYVr3fAes2-2EZ09IXACK6-9FkKU7w";
+
 
 // ==========================================
 // 1. الخطة الدراسية الرسمية - قسم علوم البيانات (جامعة تعز)
@@ -130,7 +130,7 @@ const courseLibrary = {
         icon: "📄",
         desc: "ملف PDF",
         status: "ready",
-        filePath: "test.pdf.pdf",
+        filePath: "FILES/test.pdf.pdf", // إذا كان يظهر في VS Code باسم test.pdf.pdf فاكتب: "FILES/test.pdf.pdf"
         fileName: "المحاضرة_1_أساليب_التنبؤ.pdf"
       },
       {
@@ -744,37 +744,25 @@ window.askAi = async function(query) {
 
   let successWithGemini = false;
 
-  if (GEMINI_API_KEY && GEMINI_API_KEY !== "ضع_مفتاح_API_الخاص_بك_هنا") {
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: `${systemInstruction}\n\nسؤال الطالب: ${query}` }]
-            }
-          ]
-        })
-      });
+try {
+    const fullPrompt = `${systemInstruction}\n\nسؤال الطالب: ${query}`;
+    const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}`);
 
-      const data = await response.json();
-
-      if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-        let botText = data.candidates[0].content.parts[0].text;
+    if (response.ok) {
+      let botText = await response.text();
+      if (botText && botText.trim()) {
         botText = botText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
         botText = botText.replace(/\n/g, "<br>");
         loadingBubble.innerHTML = botText;
         successWithGemini = true;
       }
-    } catch (e) {
-      successWithGemini = false;
     }
+  } catch (e) {
+    console.error("AI Error:", e);
+    successWithGemini = false;
   }
 
-  // إذا تعذر اتصال سيرفر Gemini (بسبب حظر الموقع الجغرافي داخل اليمن أو عدم توفر VPN)
-  // يتم تقديم الإجابة الأكاديمية الذكية فوراً دون أي رسالة عجز
+  // إذا تعذر الاتصال بالإنترنت يتم تقديم الإجابة الاحتياطية فوراً
   if (!successWithGemini) {
     const localAnswer = getLocalSmartAnswer(query);
     loadingBubble.innerHTML = localAnswer;
