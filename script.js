@@ -394,7 +394,7 @@ window.handleActionChoice = function(categoryKey) {
       const icon = item.icon || defaultIcon;
       let actionElement = "";
 if (item.url) {
-  if (item.url.includes("drive.google.com")) {
+  if (item.desc === "ملف PDF") {
     actionElement = `
       <a href="${item.url}" class="content-item-btn">
         ⬇ تحميل
