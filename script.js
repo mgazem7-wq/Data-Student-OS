@@ -129,9 +129,7 @@ const courseLibrary = {
         title: "المحاضرة 1",
         icon: "📄",
         desc: "ملف PDF",
-        status: "ready",
-        filePath: "FILES/test.pdf.pdf", // إذا كان يظهر في VS Code باسم test.pdf.pdf فاكتب: "FILES/test.pdf.pdf"
-        fileName: "المحاضرة_1_أساليب_التنبؤ.pdf"
+        status: "pending"
       },
       {
         title: "المحاضرة 2",
@@ -377,12 +375,6 @@ function renderStep4() {
   `;
 }
 
-// دالة لمعالجة مسار الملف تلقائياً ليعمل محلياً وعلى GitHub Pages
-function getValidFilePath(path) {
-  if (!path) return "#";
-  return path;
-}
-
 // المرحلة 5: عرض الملفات مع التحميل المباشر المؤكد
 window.handleActionChoice = function(categoryKey) {
   let categoryTitle = "";
@@ -401,15 +393,7 @@ window.handleActionChoice = function(categoryKey) {
     items.forEach((item) => {
       const icon = item.icon || defaultIcon;
       let actionElement = "";
-
-      if (item.status === "ready") {
-        const fileUrl = getValidFilePath(item.filePath);
-        actionElement = `
-          <a href="${fileUrl}" download="${item.fileName}" class="content-item-btn">
-            تحميل ⬇
-          </a>
-        `;
-      } else if (item.url) {
+if (item.url) {
         actionElement = `
           <a href="${item.url}" target="_blank" class="content-item-btn">
             مشاهدة ↗
