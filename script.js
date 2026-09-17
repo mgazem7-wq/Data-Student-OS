@@ -144,26 +144,57 @@ async function loadCourseContentFromSheet() {
 
   try {
     const response = await fetch(CONTENT_SHEET_URL);
+
+    if (!response.ok) {
+      throw new Error("فشل الاتصال بـ Google Sheets");
+    }
+
     const csvText = await response.text();
 
     console.log("بيانات Google Sheets للمحتوى:", csvText);
 
-    const rows = csvText.trim().split("\n");
-    const headers = rows[0].split(",");
+    const rows = csvText.trim().split(/\r?\n/);
+
+    if (rows.length < 2) {
+      console.warn("لا توجد بيانات محتوى في Google Sheets");
+      return;
+    }
 
     const newLibrary = {};
 
     rows.slice(1).forEach(row => {
+      // ترتيب الأعمدة:
+      // 0 = المستوى
+      // 1 = المقرر
+      // 2 = القسم
+      // 3 = اسم المحتوى
+      // 4 = النوع
+      // 5 = الرابط
+
       const columns = row.split(",");
 
-      const course = columns[0]?.trim();
-      const section = columns[1]?.trim();
-      const title = columns[2]?.trim();
-      const type = columns[3]?.trim();
-      const url = columns[4]?.trim();
+      const level = columns[0]?.trim();
+      const course = columns[1]?.trim();
+      const section = columns[2]?.trim();
+      const title = columns[3]?.trim();
+      const type = columns[4]?.trim();
+      const url = columns[5]?.trim();
 
-      if (!course || !section || !title || !url) return;
+      console.log("قراءة صف:", {
+        level,
+        course,
+        section,
+        title,
+        type,
+        url
+      });
 
+      // تجاهل الصفوف غير المكتملة
+      if (!course || !section || !title || !url) {
+        return;
+      }
+
+      // إنشاء المقرر إذا لم يكن موجوداً
       if (!newLibrary[course]) {
         newLibrary[course] = {
           lectures: [],
@@ -172,18 +203,25 @@ async function loadCourseContentFromSheet() {
         };
       }
 
+      // تحديد القسم
       let categoryKey = "";
 
       if (section === "المحاضرات") {
         categoryKey = "lectures";
-      } else if (section === "الكورسات") {
+      } 
+      else if (section === "الكورسات") {
         categoryKey = "extraCourses";
-      } else if (section === "النماذج") {
+      } 
+      else if (section === "النماذج") {
         categoryKey = "exams";
       }
 
-      if (!categoryKey) return;
+      // إذا كان القسم غير معروف، تجاهل الصف
+      if (!categoryKey) {
+        return;
+      }
 
+      // إضافة المحتوى
       newLibrary[course][categoryKey].push({
         title: title,
         icon: type === "YouTube" ? "🎥" : "📄",
@@ -192,12 +230,13 @@ async function loadCourseContentFromSheet() {
       });
     });
 
+    // تحديث مكتبة المقررات
     Object.keys(newLibrary).forEach(course => {
       courseLibrary[course] = newLibrary[course];
     });
 
     console.log(
-      "تم تحميل محتوى المقررات من Google Sheets:",
+      "تم تحميل محتوى المقررات بنجاح:",
       newLibrary
     );
 
@@ -208,7 +247,6 @@ async function loadCourseContentFromSheet() {
     );
   }
 }
-
 
 const courseLibrary = {
   "أساليب التنبؤ": {
