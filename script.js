@@ -380,9 +380,7 @@ function renderStep4() {
 // دالة لمعالجة مسار الملف تلقائياً ليعمل محلياً وعلى GitHub Pages
 function getValidFilePath(path) {
   if (!path) return "#";
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  const cleanFileName = path.split("/").pop();
-  return cleanFileName;
+  return path;
 }
 
 // المرحلة 5: عرض الملفات مع التحميل المباشر المؤكد
@@ -767,7 +765,14 @@ try {
   } catch (e) {
     console.error("AI Error:", e);
     successWithGemini = false;
+  }if (!successWithGemini) {
+    const localAnswer = getLocalSmartAnswer(query);
+    loadingBubble.innerHTML = localAnswer;
   }
+
+  if (sendBtn) sendBtn.disabled = false;
+  messagesList.scrollTop = messagesList.scrollHeight;
+};
 
 // ربط الأحداث
 if (openModalBtn) openModalBtn.addEventListener("click", openModal);
