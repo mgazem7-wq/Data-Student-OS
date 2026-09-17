@@ -394,12 +394,20 @@ window.handleActionChoice = function(categoryKey) {
       const icon = item.icon || defaultIcon;
       let actionElement = "";
 if (item.url) {
-        actionElement = `
-          <a href="${item.url}" target="_blank" class="content-item-btn">
-            مشاهدة ↗
-          </a>
-        `;
-      } else {
+  if (item.url.includes("drive.google.com")) {
+    actionElement = `
+      <a href="${item.url}" class="content-item-btn">
+        ⬇ تحميل
+      </a>
+    `;
+  } else {
+    actionElement = `
+      <a href="${item.url}" target="_blank" class="content-item-btn">
+        مشاهدة ↗
+      </a>
+    `;
+  }
+} else {
         actionElement = `
           <span class="badge-pending">قيد التجهيز ⏳</span>
         `;
