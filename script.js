@@ -157,7 +157,7 @@ const courseLibrary = {
         title: "كورس أساسيات التنبؤ والسلاسل الزمنية",
         icon: "🎥",
         desc: "رابط يوتيوب",
-        url: "https://www.youtube.com"
+        url: "https://youtu.be/qma5w3lstR4?si=vJmRkZj8mkjbgzR3"
       }
     ],
     exams: [
