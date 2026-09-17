@@ -745,12 +745,19 @@ window.askAi = async function(query) {
   let successWithGemini = false;
 
 try {
-    const fullPrompt = `${systemInstruction}\n\nسؤال الطالب: ${query}`;
-    const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}`);
+    const response = await fetch("https://damp-pond-35f8.mgazem7.workers.dev", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: `سؤال الطالب: ${query}`,
+        systemInstruction: systemInstruction
+      })
+    });
 
     if (response.ok) {
-      let botText = await response.text();
-      if (botText && botText.trim()) {
+      const data = await response.json();
+      if (data.text && data.text.trim()) {
+        let botText = data.text;
         botText = botText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
         botText = botText.replace(/\n/g, "<br>");
         loadingBubble.innerHTML = botText;
@@ -761,16 +768,6 @@ try {
     console.error("AI Error:", e);
     successWithGemini = false;
   }
-
-  // إذا تعذر الاتصال بالإنترنت يتم تقديم الإجابة الاحتياطية فوراً
-  if (!successWithGemini) {
-    const localAnswer = getLocalSmartAnswer(query);
-    loadingBubble.innerHTML = localAnswer;
-  }
-
-  if (sendBtn) sendBtn.disabled = false;
-  messagesList.scrollTop = messagesList.scrollHeight;
-};
 
 // ربط الأحداث
 if (openModalBtn) openModalBtn.addEventListener("click", openModal);
