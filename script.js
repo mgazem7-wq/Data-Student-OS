@@ -122,7 +122,7 @@ const academicData = {
 // ==========================================
 // 2. مكتبة محتوى المقررات (مسار الملف مضبوط ومؤكد)
 // ==========================================
-```js
+
 const CONTENT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-zeg8kbkA5foA9oFdF462BUjzaIg6WDa7Q6eGyvYx1LF4BpSRdSfguScXOFIm3mvr-_KclFnEuIIG/pub?gid=0&single=true&output=csv";
 
 async function loadContentFromSheet() {
@@ -263,7 +263,7 @@ const courseLibrary = {
 
 // تشغيل تحميل المحتوى من Google Sheets
 loadCourseContentFromSheet();
-```
+
 // ==========================================
 // 3. إدارة التنقل وحالة النافذة
 // ==========================================
