@@ -126,11 +126,11 @@ const courseLibrary = {
   "أساليب التنبؤ": {
     lectures: [
       {
-        title: "المحاضرة 1",
-        icon: "📄",
-        desc: "ملف PDF",
-        status: "pending"
-      },
+  title: "المحاضرة 1",
+  icon: "📄",
+  desc: "ملف PDF",
+  url: "https://drive.google.com/uc?export=download&id=1q5sCXr5RPHVj5CJ6Gw6CLEluqtPzHLYl"
+},
       {
         title: "المحاضرة 2",
         icon: "📄",
