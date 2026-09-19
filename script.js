@@ -124,29 +124,30 @@ const academicData = {
 // ==========================================
 const CONTENT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-zeg8kbkA5foA9oFdF462BUjzaIg6WDa7Q6eGyvYx1LF4BpSRdSfguScXOFIm3mvr-_KclFnEuIIG/pub?gid=0&single=true&output=csv";
 
-// دالة لمعالجة وتوزيع بيانات الـ CSV على المقررات بأمان
+// دالة لمعالجة وتوزيع بيانات الـ CSV على المقررات بأمان ودون تكرار
 function parseAndApplyCsv(csvText) {
   if (!csvText) return;
   const rows = csvText.trim().split(/\r?\n/);
   if (rows.length < 2) return;
 
-  const newLibrary = {};
-
   rows.slice(1).forEach(row => {
+    if (!row.trim()) return;
     const columns = row.split(",");
+    if (columns.length < 6) return;
 
     const level = columns[0]?.trim();
-    const course = columns?.trim();
-    const section = columns?.trim();
-    const title = columns?.trim();
-    const type = columns?.trim();
-    const url = columns?.trim();
+    const course = columns[1]?.trim();
+    const section = columns[2]?.trim();
+    const title = columns[3]?.trim();
+    const type = columns[4]?.trim();
+    const url = columns.slice(5).join(",")?.trim(); // أخذ الرابط بالكامل حتى لو احتوى على فواصل
 
-    // فحص وتجاهل الصفوف الناقصة (Data Validation)
+    // فحص وتجاهل الصفوف الناقصة
     if (!course || !section || !title || !url) return;
 
-    if (!newLibrary[course]) {
-      newLibrary[course] = {
+    // إذا لم يكن المقرر موجوداً مسبقاً في الكود يتم إنشاؤه تلقائياً
+    if (!courseLibrary[course]) {
+      courseLibrary[course] = {
         lectures: [],
         extraCourses: [],
         exams: []
@@ -160,17 +161,23 @@ function parseAndApplyCsv(csvText) {
 
     if (!categoryKey) return;
 
-    newLibrary[course][categoryKey].push({
-      title: title,
-      icon: type === "YouTube" ? "🎥" : "📄",
-      desc: type === "YouTube" ? "رابط يوتيوب" : "ملف PDF",
-      url: url
-    });
-  });
-
-  // دمج المحتوى مع مكتبة المقررات
-  Object.keys(newLibrary).forEach(course => {
-    courseLibrary[course] = newLibrary[course];
+    // دمج وتحديث العنصر إذا كان موجوداً، أو إضافته إن كان جديداً (لمنع التكرار)
+    const existingIndex = courseLibrary[course][categoryKey].findIndex(item => item.title === title);
+    if (existingIndex !== -1) {
+      courseLibrary[course][categoryKey][existingIndex] = {
+        title: title,
+        icon: type === "YouTube" ? "🎥" : "📄",
+        desc: type === "YouTube" ? "رابط يوتيوب" : "ملف PDF",
+        url: url
+      };
+    } else {
+      courseLibrary[course][categoryKey].push({
+        title: title,
+        icon: type === "YouTube" ? "🎥" : "📄",
+        desc: type === "YouTube" ? "رابط يوتيوب" : "ملف PDF",
+        url: url
+      });
+    }
   });
 }
 
