@@ -120,131 +120,95 @@ const academicData = {
 };
 
 // ==========================================
-// 2. مكتبة محتوى المقررات (مسار الملف مضبوط ومؤكد)
+// 2. مكتبة محتوى المقررات (مربوطة بـ Google Sheets مع تخزين مؤقت)
 // ==========================================
 const CONTENT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-zeg8kbkA5foA9oFdF462BUjzaIg6WDa7Q6eGyvYx1LF4BpSRdSfguScXOFIm3mvr-_KclFnEuIIG/pub?gid=0&single=true&output=csv";
 
-async function loadContentFromSheet() {
-  try {
-    const response = await fetch(CONTENT_SHEET_URL);
-    const csvText = await response.text();
+// دالة لمعالجة وتوزيع بيانات الـ CSV على المقررات بأمان
+function parseAndApplyCsv(csvText) {
+  if (!csvText) return;
+  const rows = csvText.trim().split(/\r?\n/);
+  if (rows.length < 2) return;
 
-    console.log("بيانات Google Sheets:", csvText);
+  const newLibrary = {};
 
-    return csvText;
-  } catch (error) {
-    console.error("خطأ في قراءة Google Sheets:", error);
-    return null;
-  }
+  rows.slice(1).forEach(row => {
+    const columns = row.split(",");
+
+    const level = columns[0]?.trim();
+    const course = columns?.trim();
+    const section = columns?.trim();
+    const title = columns?.trim();
+    const type = columns?.trim();
+    const url = columns?.trim();
+
+    // فحص وتجاهل الصفوف الناقصة (Data Validation)
+    if (!course || !section || !title || !url) return;
+
+    if (!newLibrary[course]) {
+      newLibrary[course] = {
+        lectures: [],
+        extraCourses: [],
+        exams: []
+      };
+    }
+
+    let categoryKey = "";
+    if (section === "المحاضرات") categoryKey = "lectures";
+    else if (section === "الكورسات") categoryKey = "extraCourses";
+    else if (section === "النماذج") categoryKey = "exams";
+
+    if (!categoryKey) return;
+
+    newLibrary[course][categoryKey].push({
+      title: title,
+      icon: type === "YouTube" ? "🎥" : "📄",
+      desc: type === "YouTube" ? "رابط يوتيوب" : "ملف PDF",
+      url: url
+    });
+  });
+
+  // دمج المحتوى مع مكتبة المقررات
+  Object.keys(newLibrary).forEach(course => {
+    courseLibrary[course] = newLibrary[course];
+  });
 }
 
-
+// دالة التحميل المدمجة بنظام التخزين المؤقت (localStorage)
 async function loadCourseContentFromSheet() {
-  console.log("بدأ تحميل محتوى المقررات من Google Sheets");
+  const CACHE_KEY = "data_student_sheet_cache";
 
+  // 1. القراءة الفورية السريعة من ذاكرة الهاتف إن وجدت (أجزاء من الثانية)
+  try {
+    const cachedCsv = localStorage.getItem(CACHE_KEY);
+    if (cachedCsv) {
+      parseAndApplyCsv(cachedCsv);
+      console.log("تم تحميل المحتوى فوراً من التخزين المؤقت (الكاش).");
+    }
+  } catch (e) {
+    console.warn("خطأ في قراءة الكاش:", e);
+  }
+
+  // 2. تحديث البيانات من Google Sheets بهدوء في الخلفية
   try {
     const response = await fetch(CONTENT_SHEET_URL);
-
     if (!response.ok) {
       throw new Error("فشل الاتصال بـ Google Sheets");
     }
 
     const csvText = await response.text();
 
-    console.log("بيانات Google Sheets للمحتوى:", csvText);
-
-    const rows = csvText.trim().split(/\r?\n/);
-
-    if (rows.length < 2) {
-      console.warn("لا توجد بيانات محتوى في Google Sheets");
-      return;
+    // حفظ أحدث نسخة في ذاكرة الهاتف
+    try {
+      localStorage.setItem(CACHE_KEY, csvText);
+    } catch (e) {
+      console.warn("تعذر الحفظ في التخزين المؤقت:", e);
     }
 
-    const newLibrary = {};
-
-    rows.slice(1).forEach(row => {
-      // ترتيب الأعمدة:
-      // 0 = المستوى
-      // 1 = المقرر
-      // 2 = القسم
-      // 3 = اسم المحتوى
-      // 4 = النوع
-      // 5 = الرابط
-
-      const columns = row.split(",");
-
-      const level = columns[0]?.trim();
-      const course = columns[1]?.trim();
-      const section = columns[2]?.trim();
-      const title = columns[3]?.trim();
-      const type = columns[4]?.trim();
-      const url = columns[5]?.trim();
-
-      console.log("قراءة صف:", {
-        level,
-        course,
-        section,
-        title,
-        type,
-        url
-      });
-
-      // تجاهل الصفوف غير المكتملة
-      if (!course || !section || !title || !url) {
-        return;
-      }
-
-      // إنشاء المقرر إذا لم يكن موجوداً
-      if (!newLibrary[course]) {
-        newLibrary[course] = {
-          lectures: [],
-          extraCourses: [],
-          exams: []
-        };
-      }
-
-      // تحديد القسم
-      let categoryKey = "";
-
-      if (section === "المحاضرات") {
-        categoryKey = "lectures";
-      } 
-      else if (section === "الكورسات") {
-        categoryKey = "extraCourses";
-      } 
-      else if (section === "النماذج") {
-        categoryKey = "exams";
-      }
-
-      // إذا كان القسم غير معروف، تجاهل الصف
-      if (!categoryKey) {
-        return;
-      }
-
-      // إضافة المحتوى
-      newLibrary[course][categoryKey].push({
-        title: title,
-        icon: type === "YouTube" ? "🎥" : "📄",
-        desc: type === "YouTube" ? "رابط يوتيوب" : "ملف PDF",
-        url: url
-      });
-    });
-
-    // تحديث مكتبة المقررات
-    Object.keys(newLibrary).forEach(course => {
-      courseLibrary[course] = newLibrary[course];
-    });
-
-    console.log(
-      "تم تحميل محتوى المقررات بنجاح:",
-      newLibrary
-    );
-
+    parseAndApplyCsv(csvText);
+    console.log("تم تحديث البيانات من Google Sheets وتخزينها في الكاش بنجاح.");
   } catch (error) {
-    console.error(
-      "خطأ في تحميل محتوى المقررات من Google Sheets:",
-      error
-    );
+    console.warn("الإنترنت ضعيف أو منقطع، يعمل الموقع الآن بالنسخة المحفوظة في الذاكرة.");
   }
 }
 
