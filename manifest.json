@@ -1,0 +1,12 @@
+{
+  "name": "بوابة الطالب الجامعي",
+  "short_name": "بوابة الطالب",
+  "description": "منصة المقررات والمحاضرات الدراسية",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar"
+}

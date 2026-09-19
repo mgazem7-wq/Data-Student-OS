@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>منصة طلاب علوم البيانات | كلية العلوم الإدارية - جامعة تعز</title>
   <link rel="stylesheet" href="style.css">
+<!-- إعدادات تطبيق الهاتف PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a8a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="بوابة الطالب">
 </head>
 <body>
 
@@ -21,7 +26,20 @@
       </nav>
     </div>
   </header>
-
+<!-- لافتة تثبيت التطبيق على الهاتف -->
+    <div id="pwa-install-banner" class="pwa-banner" style="display: none;">
+      <div class="pwa-banner-content">
+        <span class="pwa-icon">📲</span>
+        <div class="pwa-text">
+          <strong>ثبّت التطبيق على هاتفك</strong>
+          <p>لتجربة أسرع</p>
+        </div>
+      </div>
+      <div class="pwa-banner-actions">
+        <button id="pwa-install-btn" class="pwa-install-btn">تثبيت التطبيق الآن</button>
+        <button id="pwa-close-btn" class="pwa-close-btn" title="إغلاق">✕</button>
+      </div>
+    </div>
   <!-- البوابة الرئيسية مع ميزة البحث السريع -->
   <main class="hero-container" id="home">
     <p class="eyebrow-tag">جامعة تعز • كلية العلوم الإدارية</p>
@@ -64,6 +82,62 @@
     <p class="footer-subtext">قسم علوم البيانات — كلية العلوم الإدارية • جامعة تعز</p>
   </footer>
 
- <script src="script.js?v=4"></script>
+ <script src="script.js?v=5"></script>
+ <!-- كود تشغيل وتفعيل تطبيق PWA وزر التثبيت -->
+  <script>
+    // 1. تسجيل مشغل التطبيق Service Worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .then(() => console.log("تم تفعيل وضع التطبيق بنجاح"))
+          .catch((err) => console.warn("تعذر تسجيل مشغل التطبيق:", err));
+      });
+    }
+
+    // 2. التحكم في إظهار زر التثبيت
+    let deferredPrompt;
+    const installBanner = document.getElementById("pwa-install-banner");
+    const installBtn = document.getElementById("pwa-install-btn");
+    const closeBtn = document.getElementById("pwa-close-btn");
+
+    // التحقق: إذا كان الطالب مثبت التطبيق بالفعل لا تظهر اللافتة
+    const isAlreadyInstalled = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+
+    if (!isAlreadyInstalled) {
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBanner) {
+          installBanner.style.display = "flex";
+        }
+      });
+    }
+
+    // عند الضغط على زر "تثبيت التطبيق الآن"
+    installBtn?.addEventListener("click", async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted") {
+          console.log("تمت الموافقة على التثبيت");
+        }
+        deferredPrompt = null;
+        if (installBanner) installBanner.style.display = "none";
+      } else {
+        alert("لتثبيت التطبيق على آيفون:\nاضغط زر المشاركة ( ⎋ ) أسفل الشاشة ثم اختر 'إضافة إلى الشاشة الرئيسية'.");
+      }
+    });
+
+    // زر الإغلاق ✕
+    closeBtn?.addEventListener("click", () => {
+      if (installBanner) installBanner.style.display = "none";
+    });
+
+    // إخفاء اللافتة تلقائياً بعد التثبيت
+    window.addEventListener("appinstalled", () => {
+      if (installBanner) installBanner.style.display = "none";
+      console.log("تم تثبيت التطبيق بنجاح!");
+    });
+  </script>
 </body>
 </html>
