@@ -27,7 +27,7 @@
     </div>
   </header>
 <!-- لافتة تثبيت التطبيق على الهاتف -->
-    <div id="pwa-install-banner" class="pwa-banner" style="display: none;">
+    <div id="pwa-install-banner" class="pwa-banner"></div>
       <div class="pwa-banner-content">
         <span class="pwa-icon">📲</span>
         <div class="pwa-text">
@@ -104,12 +104,10 @@
     const isAlreadyInstalled = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
 
     if (!isAlreadyInstalled) {
+      if (installBanner) installBanner.style.display = "flex";
       window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        if (installBanner) {
-          installBanner.style.display = "flex";
-        }
       });
     }
 
